@@ -119,10 +119,10 @@ function addSleeper() {
     var newSleeper = new paper.Raster({
         source: './images/sleeper.png', 
     });
-    newSleeper.bounds.size = initialSleeperSize * view.size.width/1000;
+    
     newSleeper.position.y = view.size.height;
-    newSleeper.position.x = view.center.x;
-
+    scaleSleeper(newSleeper);
+    constrictSleeper(newSleeper);
     project.layers[1].addChild(newSleeper);     
 }
 
