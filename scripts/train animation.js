@@ -133,6 +133,11 @@ function scaleSleeper(sleeper) {
 
 function moveSleeper() {
     var numberOfSleeperLayerChilds = project.layers[1].children.length;
+
+    if(numberOfSleeperLayerChilds > 100) {
+        location.reload();
+    }
+    
     for (var i = 0; i < numberOfSleeperLayerChilds; i++) {
         var sleeper = project.layers[1].children[i];
         var distanceToEndPoint = sleeper.position.y - train.position.y;
@@ -142,17 +147,22 @@ function moveSleeper() {
         scaleSleeper(sleeper);
         constrictSleeper(sleeper);
 
-        if(sleeper.position.y < train.position.y) {
-            sleeper.remove();            
-        }
-
         if(i === numberOfSleeperLayerChilds-1) { 
             var isTimeToAddNewSleeper = sleeper.position.y < view.size.height - 2*sleeper.bounds.height;
 
             if(!isPauseBeforeNewSleeper && isTimeToAddNewSleeper) {
                 addSleeper();
             }
-        }              
+        } 
+
+        if(sleeper.position.y <= train.position.y) {
+            sleeper.remove();
+            numberOfSleeperLayerChilds--;
+        }
+    
+        if(i === 0 && sleeper.position.y < train.position.y + train.bounds.height/3) {
+            document.getElementById('train').style.opacity = 1;
+        }
     }
 }
 
@@ -174,17 +184,21 @@ function scaleRails() {
 
 function scaleTrain() {  
     train.bounds.size = initialTrainSize*view.size.width/1800;
-    train.position = view.center; 
+    train.position.x = view.center.x; 
+}
+
+function placeTrainInCenter () {
+    train.position = view.center;
 }
 
 
-function pumpTrain(maxDY) {   
+function pumpTrain() {   
     var vector = destination - train.position.y;
     var deltaX = Math.abs(train.position.x - view.center.x);
 
-	train.position.y += vector / 60;
+	train.position.y += vector / 80;
 
-	if (vector < view.size.width/300) {
+	if (vector < view.size.width/200) {
 		destination = view.center.y - Math.random() * view.size.width/20;
     }   
 
@@ -196,38 +210,28 @@ function pumpTrain(maxDY) {
 }
 
 function onFrame(event) {
-    if(view.center.y > normalViewCenterY) {
-        view.center.y -= normalViewCenterY/40;
-    }
-    
-    moveStars();   
-
+    scaleTrain();
+    scaleRails();       
+    moveStars();  
     pumpTrain();
-
     moveSleeper();
-
     rails.bounds.top = train.position.y;
-
 }
 
 function onResize() {
     scaleTrain();
     scaleRails();
+    placeTrainInCenter();
 }
 
-var centerNormalizeIntervalId;
 var numberOfStars = 100;
 var maxDistancesToCenter = {};
 var starInitialSizes = {};
 var isPauseBeforeNewSleeper = false;
-var normalViewCenterY = view.center.y;
-
-view.center.y = view.size.height-2;
-
-addStarWithDelay(100);
-
 var sleeperLayer = new Layer();
 var trainLayer = new Layer();
+
+addStarWithDelay(100);
 
 trainLayer.activate();
 
@@ -242,11 +246,12 @@ var train = new paper.Raster({
     position: view.center
 });
 
-view.center.y = view.size.height - train.bounds.height/3;
-
 var initialTrainSize = train.bounds.size;
 var initialRailsSize = rails.bounds.size;
 var initialSleeperSize = getInitialSleeperSize();
 var destination = view.center.y;
 
+placeTrainInCenter();
+scaleTrain();
+scaleRails();
 addSleeper();
