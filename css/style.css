@@ -1,0 +1,42 @@
+@font-face {
+  font-family: 'Trend Sans One';
+  src: url('../fonts/TrendSansOne.ttf') format('truetype');  
+  font-weight: normal;
+  font-style: normal;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+}
+
+.train-animation-wrapper {
+  height: 100vh;
+  width: 100%;
+  position: relative;
+}
+
+canvas {
+  position: absolute;
+  z-index: 0;
+  background: rgb(26, 26, 26);
+  top: 0;
+  left: 0;
+}
+
+h1 {
+  color: white;
+  font-family: 'Trend Sans One';
+  font-size: 40px;
+  z-index: 1;
+  margin: 0;
+  position: absolute;
+  top: 0;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: calc(100vh/8)
+}
